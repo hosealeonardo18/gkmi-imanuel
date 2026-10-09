@@ -1,0 +1,71 @@
+.event-row {
+  min-height: 112px;
+  display: grid;
+  grid-template-columns: 110px 1fr 130px 34px;
+  align-items: center;
+  gap: 18px;
+  padding-inline: 16px;
+  border-bottom: 1px solid var(--border);
+  transition: background 260ms ease, padding 260ms var(--ease);
+}
+
+.event-row:hover {
+  background: rgba(255,255,255,.72);
+  padding-left: 23px;
+}
+
+.event-date {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+}
+
+.event-date strong {
+  font-size: 27px;
+  line-height: 1;
+  font-weight: 500;
+  letter-spacing: -.04em;
+}
+
+.event-date span {
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: .1em;
+  font-weight: 700;
+}
+
+.event-row h3 {
+  margin: 0 0 5px;
+  font-size: 14px;
+}
+
+.event-row p {
+  margin: 0;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.event-time {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+@media (max-width: 720px) {
+  .event-row {
+    grid-template-columns: 70px 1fr 20px;
+    grid-template-areas:
+      "date title arrow"
+      "date time arrow";
+    min-height: 105px;
+    padding: 16px 6px;
+  }
+
+  .event-row:hover {
+    padding-left: 9px;
+  }
+
+  .event-date { grid-area: date; }
+  .event-copy { grid-area: title; }
+  .event-time { grid-area: time; }
+  .event-row .row-arrow { grid-area: arrow; }
+}

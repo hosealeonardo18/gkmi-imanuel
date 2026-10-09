@@ -21,3 +21,6 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+RULES.md
+PLAN.md
+PRD.md

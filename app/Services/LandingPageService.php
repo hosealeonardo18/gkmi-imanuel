@@ -49,26 +49,23 @@ class LandingPageService
 
     private function getMinistries(): array
     {
-        return [
-            ['name' => 'Youth',    'subtitle' => 'Youth Ministry',    'image' => '/images/ministries/youth.jpg'],
-            ['name' => 'Children', 'subtitle' => 'Children Ministry', 'image' => '/images/ministries/children.jpg'],
-            ['name' => 'Worship',  'subtitle' => 'Worship Ministry',  'image' => '/images/ministries/worship.jpg'],
-            ['name' => 'Family',   'subtitle' => 'Family Ministry',   'image' => '/images/ministries/family.jpg'],
-            ['name' => 'Prayer',   'subtitle' => 'Prayer Ministry',   'image' => '/images/ministries/prayer.jpg'],
-        ];
+        return config('church.ministries', []);
+    }
+
+    public function getMinistry(string $slug): ?array
+    {
+        foreach ($this->getMinistries() as $ministry) {
+            if ($ministry['slug'] === $slug) {
+                return $ministry;
+            }
+        }
+
+        return null;
     }
 
     private function getEvents(): array
     {
-        return [
-            [
-                'date'     => '04',
-                'month'    => 'OCT',
-                'title'    => 'Ibadah Raya Minggu',
-                'time'     => '09.00 WIB',
-                'location' => 'GKMI Imanuel Cipayung',
-            ],
-        ];
+        return config('church.events', []);
     }
 
     /**

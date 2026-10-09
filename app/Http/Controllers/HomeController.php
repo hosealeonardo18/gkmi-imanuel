@@ -16,4 +16,12 @@ final class HomeController extends Controller
     {
         return view('pages.home', $this->landingPageService->getData());
     }
+
+    public function ministry(string $slug): View
+    {
+        $ministry = $this->landingPageService->getMinistry($slug);
+        abort_if($ministry === null, 404);
+
+        return view('pages.ministry', ['ministry' => $ministry]);
+    }
 }

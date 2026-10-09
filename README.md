@@ -64,3 +64,28 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Integrasi YouTube
+
+Isi konfigurasi backend di `.env` (jangan commit API key):
+
+```dotenv
+YOUTUBE_API_KEY=
+YOUTUBE_CHANNEL_ID=
+```
+
+Gunakan channel ID YouTube (format `UC...`), bukan nama channel atau handle.
+Aktifkan YouTube Data API v3 untuk API key tersebut. Setelah mengubah `.env`,
+jalankan `php artisan config:clear` (atau `php artisan config:cache` di production).
+
+Website memilih live stream terlebih dahulu, kemudian video terbaru yang dapat
+disematkan. Cache live diperbarui setiap 1–2 menit dan video terbaru setiap
+15 menit. Tanpa konfigurasi atau jika API gagal, section menampilkan fallback.
+API key tidak dikirim ke browser. Untuk shared hosting, gunakan cache file
+(`CACHE_STORE=file`) atau database cache yang sudah dimigrasikan.
+
+Tes integrasi tanpa menghubungi API asli:
+
+```bash
+php artisan test --filter=YouTube
+```

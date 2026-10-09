@@ -1,6 +1,6 @@
   <header class="site-header" id="site-header">
     <div class="container nav-wrap">
-      <a class="brand" href="#home" aria-label="GKMI Imanuel Cipayung">
+      <a class="brand" href="{{ route('home') }}#home" aria-label="GKMI Imanuel Cipayung">
         <span class="brand-mark" aria-hidden="true">✦</span>
         <span class="brand-copy">
           <strong data-church-name>GKMI Imanuel</strong>
@@ -9,15 +9,15 @@
       </a>
 
       <nav class="desktop-nav" aria-label="Navigasi utama">
-        <a href="#home">Home</a>
-        <a href="#about">Tentang</a>
-        <a href="#schedule">Ibadah</a>
-        <a href="#ministry">Pelayanan</a>
-        <a href="#events">Kegiatan</a>
-        <a href="#contact">Kontak</a>
+        <a href="{{ route('home') }}#home">Home</a>
+        <a href="{{ route('home') }}#about">Tentang</a>
+        <a href="{{ route('home') }}#schedule">Ibadah</a>
+        <a href="{{ route('home') }}#ministry">Pelayanan</a>
+        <a href="{{ route('home') }}#events">Kegiatan</a>
+        <a href="{{ route('home') }}#contact">Kontak</a>
       </nav>
 
-      <a class="button button-small button-dark desktop-cta" href="#contact">
+      <a class="button button-small button-dark desktop-cta" href="{{ route('home') }}#contact">
         Kunjungi Kami <span>→</span>
       </a>
 
@@ -41,19 +41,19 @@
       </div>
 
       <nav class="mobile-nav">
-        <a href="#home">Home</a>
-        <a href="#about">Tentang</a>
-        <a href="#schedule">Ibadah</a>
-        <a href="#ministry">Pelayanan</a>
-        <a href="#events">Kegiatan</a>
-        <a href="#contact">Kontak</a>
+        <a href="{{ route('home') }}#home">Home</a>
+        <a href="{{ route('home') }}#about">Tentang</a>
+        <a href="{{ route('home') }}#schedule">Ibadah</a>
+        <a href="{{ route('home') }}#ministry">Pelayanan</a>
+        <a href="{{ route('home') }}#events">Kegiatan</a>
+        <a href="{{ route('home') }}#contact">Kontak</a>
       </nav>
 
       <div class="mobile-social">
         <a data-instagram-link href="#" target="_blank" rel="noreferrer">Instagram</a>
-        <a data-youtube-link href="#" target="_blank" rel="noreferrer">YouTube</a>
+        <a data-youtube-link href="{{ config('services.youtube.channel_id') ? 'https://www.youtube.com/channel/' . config('services.youtube.channel_id') : route('home') . '#service' }}" target="_blank" rel="noreferrer">YouTube</a>
       </div>
 
-      <a class="button button-dark" href="#contact">Kunjungi Kami →</a>
+      <a class="button button-dark" href="{{ route('home') }}#contact">Kunjungi Kami →</a>
     </div>
   </div>

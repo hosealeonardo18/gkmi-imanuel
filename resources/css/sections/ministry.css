@@ -100,3 +100,48 @@
     min-height: 255px;
   }
 }
+.ministry-card:focus-visible {
+  outline: 2px solid var(--dark);
+  outline-offset: 4px;
+}
+
+.ministry-detail {
+  padding-top: 130px;
+}
+
+.ministry-back {
+  display: inline-flex;
+  margin-bottom: 32px;
+}
+
+.ministry-focus-title {
+  margin-top: 28px;
+  font-size: 20px;
+}
+
+.ministry-focus {
+  margin: 0 0 28px;
+  padding-left: 20px;
+  list-style: disc;
+  color: var(--muted);
+}
+
+.ministry-focus li + li {
+  margin-top: 10px;
+}
+
+@media (max-width: 720px) {
+  .ministry-detail .split-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ministry-detail .section-media img {
+  height: 500px;
+}
+
+@media (max-width: 720px) {
+  .ministry-detail .section-media img {
+    height: 350px;
+  }
+}

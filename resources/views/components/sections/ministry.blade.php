@@ -10,7 +10,7 @@
 
         <div class="ministry-grid" id="ministry-grid">
           @foreach ($ministries as $ministry)
-            <article class="ministry-card reveal">
+            <a class="ministry-card reveal" href="{{ route('ministry.show', $ministry['slug']) }}" aria-label="Detail pelayanan {{ $ministry['name'] }}">
               @if ($ministry['image'])
                 <img
                   src="{{ $ministry['image'] }}"
@@ -23,7 +23,7 @@
                 {{ $ministry['subtitle'] ?? $ministry['name'] . ' Ministry' }}
                 <b>→</b>
               </span>
-            </article>
+            </a>
           @endforeach
         </div>
       </div>

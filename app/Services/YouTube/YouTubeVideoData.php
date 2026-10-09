@@ -19,9 +19,7 @@ final class YouTubeVideoData
 
     public static function fromApiItem(array $item, bool $isLive = false): self
     {
-        $videoId = $isLive
-            ? ($item['id']['videoId'] ?? '')
-            : ($item['id']['videoId'] ?? '');
+        $videoId = $item['id']['videoId'] ?? '';
 
         return new self(
             videoId: $videoId,
@@ -41,9 +39,7 @@ final class YouTubeVideoData
             return '';
         }
 
-        $params = $this->isLive ? '?autoplay=1' : '';
-
-        return "https://www.youtube.com/embed/{$this->videoId}{$params}";
+        return "https://www.youtube.com/embed/{$this->videoId}";
     }
 
     public function toArray(): array

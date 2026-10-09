@@ -39,7 +39,7 @@
         </div>
         <div>
           <span class="quick-label">YOUTUBE</span>
-          <a data-youtube-link href="#" target="_blank" rel="noreferrer">Watch Service →</a>
+          <a data-youtube-link href="{{ config('services.youtube.channel_id') ? 'https://www.youtube.com/channel/' . config('services.youtube.channel_id') : '#service' }}" target="_blank" rel="noreferrer">Watch Service →</a>
         </div>
       </div>
     </section>

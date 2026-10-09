@@ -10,16 +10,16 @@
         <div class="footer-links">
           <div>
             <span>Navigation</span>
-            <a href="#home">Home</a>
-            <a href="#about">Tentang</a>
-            <a href="#schedule">Ibadah</a>
-            <a href="#ministry">Pelayanan</a>
-            <a href="#events">Kegiatan</a>
+            <a href="{{ route('home') }}#home">Home</a>
+            <a href="{{ route('home') }}#about">Tentang</a>
+            <a href="{{ route('home') }}#schedule">Ibadah</a>
+            <a href="{{ route('home') }}#ministry">Pelayanan</a>
+            <a href="{{ route('home') }}#events">Kegiatan</a>
           </div>
           <div>
             <span>Social</span>
             <a data-instagram-link href="#" target="_blank" rel="noreferrer">Instagram</a>
-            <a data-youtube-link href="#" target="_blank" rel="noreferrer">YouTube</a>
+            <a data-youtube-link href="{{ config('services.youtube.channel_id') ? 'https://www.youtube.com/channel/' . config('services.youtube.channel_id') : route('home') . '#service' }}" target="_blank" rel="noreferrer">YouTube</a>
             <a data-whatsapp-link href="#">WhatsApp</a>
           </div>
         </div>

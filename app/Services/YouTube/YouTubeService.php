@@ -10,125 +10,87 @@ final class YouTubeService
 {
     private const API_BASE = 'https://www.googleapis.com/youtube/v3/search';
 
-    private const CACHE_KEY_LIVE   = 'church.youtube.live';
-    private const CACHE_KEY_LATEST = 'church.youtube.latest';
-
     private readonly string $apiKey;
     private readonly string $channelId;
 
     public function __construct()
     {
-        $this->apiKey    = config('services.youtube.api_key', '');
-        $this->channelId = config('services.youtube.channel_id', '');
+        $this->apiKey = config('services.youtube.api_key') ?? '';
+        $this->channelId = config('services.youtube.channel_id') ?? '';
     }
 
-    /**
-     * Ambil video yang sedang live atau video terbaru.
-     * Sesuai PRD §22: cek cache → cek live → fallback ke latest.
-     */
     public function getLatestOrLiveVideo(): ?YouTubeVideoData
     {
-        if (! $this->isConfigured()) {
+        if ($this->apiKey === '' || $this->channelId === '') {
             return null;
         }
 
-        // Cek cache live (TTL: 1 menit)
-        $cached = Cache::get(self::CACHE_KEY_LIVE);
-        if ($cached !== null) {
-            return $cached;
-        }
+        $channel = hash('sha256', $this->channelId);
+        $liveKey = "church.youtube.live.{$channel}";
+        $latestKey = "church.youtube.latest.{$channel}";
 
         try {
-            // Prioritas 1: Live stream aktif
-            $live = $this->fetchLiveStream();
+            $cached = Cache::get($liveKey);
+            if ($cached !== null) {
+                return $cached ?: null;
+            }
+
+            $live = $this->fetchVideo(isLive: true);
             if ($live !== null) {
-                Cache::put(self::CACHE_KEY_LIVE, $live, now()->addMinutes(1));
+                Cache::put($liveKey, $live, now()->addMinute());
+
                 return $live;
             }
 
-            // Prioritas 2: Video terbaru (TTL: 15 menit)
-            $latest = Cache::remember(
-                self::CACHE_KEY_LATEST,
-                now()->addMinutes(15),
-                fn () => $this->fetchLatestVideo()
-            );
+            $latest = Cache::get($latestKey);
+            if ($latest === null) {
+                $latest = $this->fetchVideo(isLive: false);
+                if ($latest !== null) {
+                    Cache::put($latestKey, $latest, now()->addMinutes(15));
+                }
+            }
 
-            // Simpan juga di cache live agar tidak repeat check terlalu sering
-            Cache::put(self::CACHE_KEY_LIVE, $latest, now()->addMinutes(2));
+            // Cache false too: empty results and API failures need a cooldown.
+            Cache::put($liveKey, $latest ?? false, now()->addMinutes(2));
 
-            return $latest;
-
-        } catch (\Throwable $e) {
-            Log::warning('YouTubeService: Failed to retrieve video', [
-                'exception' => $e->getMessage(),
-            ]);
+            return $latest ?: null;
+        } catch (\Throwable) {
+            Log::warning('YouTubeService: Cache unavailable');
 
             return null;
         }
     }
 
-    /**
-     * Cek apakah ada live stream yang sedang aktif.
-     */
-    private function fetchLiveStream(): ?YouTubeVideoData
+    private function fetchVideo(bool $isLive): ?YouTubeVideoData
     {
-        $response = Http::timeout(5)->get(self::API_BASE, [
-            'part'       => 'snippet',
-            'channelId'  => $this->channelId,
-            'type'       => 'video',
-            'eventType'  => 'live',
-            'maxResults' => 1,
-            'key'        => $this->apiKey,
-        ]);
-
-        if (! $response->successful()) {
-            Log::warning('YouTubeService: Live stream API call failed', [
-                'status' => $response->status(),
+        try {
+            $response = Http::connectTimeout(3)->timeout(5)->get(self::API_BASE, [
+                'part' => 'snippet',
+                'channelId' => $this->channelId,
+                'type' => 'video',
+                'maxResults' => 1,
+                'videoEmbeddable' => 'true',
+                'key' => $this->apiKey,
+                ...($isLive ? ['eventType' => 'live'] : ['order' => 'date']),
             ]);
+
+            if (! $response->successful()) {
+                Log::warning('YouTubeService: API request failed', ['status' => $response->status()]);
+
+                return null;
+            }
+
+            $item = $response->json('items.0');
+            if (! is_array($item) || ! preg_match('/^[A-Za-z0-9_-]{11}$/', $item['id']['videoId'] ?? '')) {
+                return null;
+            }
+
+            return YouTubeVideoData::fromApiItem($item, $isLive);
+        } catch (\Throwable) {
+            // Exception messages can include the request URL and API key.
+            Log::warning('YouTubeService: API unavailable');
+
             return null;
         }
-
-        $items = $response->json('items', []);
-
-        if (empty($items)) {
-            return null;
-        }
-
-        return YouTubeVideoData::fromApiItem($items[0], isLive: true);
-    }
-
-    /**
-     * Ambil video terbaru dari channel.
-     */
-    private function fetchLatestVideo(): ?YouTubeVideoData
-    {
-        $response = Http::timeout(5)->get(self::API_BASE, [
-            'part'       => 'snippet',
-            'channelId'  => $this->channelId,
-            'type'       => 'video',
-            'order'      => 'date',
-            'maxResults' => 1,
-            'key'        => $this->apiKey,
-        ]);
-
-        if (! $response->successful()) {
-            Log::warning('YouTubeService: Latest video API call failed', [
-                'status' => $response->status(),
-            ]);
-            return null;
-        }
-
-        $items = $response->json('items', []);
-
-        if (empty($items)) {
-            return null;
-        }
-
-        return YouTubeVideoData::fromApiItem($items[0], isLive: false);
-    }
-
-    private function isConfigured(): bool
-    {
-        return ! empty($this->apiKey) && ! empty($this->channelId);
     }
 }
